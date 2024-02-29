@@ -25,7 +25,7 @@ i18n.use(initReactI18next).init({
 });
 
 const store = createStore(undefined, false);
-$baseUrl.set('http://localhost:9090');
+$baseUrl.set('https://relay.hexadecilab.com');
 
 const preview: Preview = {
   decorators: [

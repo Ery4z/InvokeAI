@@ -31,7 +31,7 @@ export const useSocketIO = () => {
   const addlSocketOptions = useStore($socketOptions);
 
   const socketUrl = useMemo(() => {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'wss';
     if (baseUrl) {
       return baseUrl.replace(/^https?:\/\//i, '');
     }
@@ -45,6 +45,9 @@ export const useSocketIO = () => {
       path: baseUrl ? '/ws/socket.io' : `${window.location.pathname}ws/socket.io`,
       autoConnect: false, // achtung! removing this breaks the dynamic middleware
       forceNew: true,
+      extraHeaders: {
+        'X-Forward-To': 'localhost:3000'
+    }
     };
 
     if (authToken) {
@@ -60,8 +63,9 @@ export const useSocketIO = () => {
       // Singleton!
       return;
     }
-
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(socketUrl, socketOptions);
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+        `https://${socketUrl}`, 
+        socketOptions);
     setEventListeners({ dispatch, socket });
     socket.connect();
 

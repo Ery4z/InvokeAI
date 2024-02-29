@@ -60,9 +60,16 @@ const dynamicBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
     baseUrl: baseUrl ? `${baseUrl}/api/v1` : `${window.location.href.replace(/\/$/, '')}/api/v1`,
   };
 
+  
+
   // When fetching the openapi.json, we need to remove circular references from the JSON.
   if (isOpenAPIRequest) {
     fetchBaseQueryArgs.jsonReplacer = getCircularReplacer();
+    fetchBaseQueryArgs.prepareHeaders = (headers) => {
+        headers.set('X-Forward-To', 'localhost:3000')
+  
+        return headers;
+      };
   }
 
   // openapi.json isn't protected by authorization, but all other requests need to include the auth token and project id.
@@ -74,6 +81,7 @@ const dynamicBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
       if (projectId) {
         headers.set('project-id', projectId);
       }
+      headers.set('X-Forward-To', 'localhost:3000')
 
       return headers;
     };
