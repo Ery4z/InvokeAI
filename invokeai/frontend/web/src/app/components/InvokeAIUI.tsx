@@ -7,6 +7,7 @@ import { $baseUrl } from 'app/store/nanostores/baseUrl';
 import { $customNavComponent } from 'app/store/nanostores/customNavComponent';
 import type { CustomStarUi } from 'app/store/nanostores/customStarUI';
 import { $customStarUI } from 'app/store/nanostores/customStarUI';
+import { $forwardTo } from 'app/store/nanostores/forwardTo';
 import { $galleryHeader } from 'app/store/nanostores/galleryHeader';
 import { $isDebugging } from 'app/store/nanostores/isDebugging';
 import { $logo } from 'app/store/nanostores/logo';
@@ -31,6 +32,7 @@ const ThemeLocaleProvider = lazy(() => import('./ThemeLocaleProvider'));
 
 interface Props extends PropsWithChildren {
   apiUrl?: string;
+  forwardTo?: string;
   openAPISchemaUrl?: string;
   token?: string;
   config?: PartialAppConfig;
@@ -52,6 +54,7 @@ interface Props extends PropsWithChildren {
 
 const InvokeAIUI = ({
   apiUrl,
+  forwardTo,
   openAPISchemaUrl,
   token,
   config,
@@ -76,6 +79,11 @@ const InvokeAIUI = ({
     // configure API client base url
     if (apiUrl) {
       $baseUrl.set(apiUrl);
+    }
+
+    // configure the X-Forward-To header
+    if(forwardTo) {
+        $forwardTo.set(forwardTo);
     }
 
     // configure API client project header
@@ -108,7 +116,7 @@ const InvokeAIUI = ({
       $projectId.set(undefined);
       $queueId.set(DEFAULT_QUEUE_ID);
     };
-  }, [apiUrl, token, middleware, projectId, queueId]);
+  }, [apiUrl, token, middleware, projectId, queueId, forwardTo]);
 
   useEffect(() => {
     if (customStarUi) {

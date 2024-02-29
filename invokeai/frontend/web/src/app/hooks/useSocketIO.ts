@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { $authToken } from 'app/store/nanostores/authToken';
 import { $baseUrl } from 'app/store/nanostores/baseUrl';
+import { $forwardTo } from 'app/store/nanostores/forwardTo';
 import { $isDebugging } from 'app/store/nanostores/isDebugging';
 import { useAppDispatch } from 'app/store/storeHooks';
 import type { MapStore } from 'nanostores';
@@ -27,6 +28,7 @@ export const $isSocketInitialized = atom<boolean>(false);
 export const useSocketIO = () => {
   const dispatch = useAppDispatch();
   const baseUrl = useStore($baseUrl);
+  const forwardTo = useStore($forwardTo);
   const authToken = useStore($authToken);
   const addlSocketOptions = useStore($socketOptions);
 
@@ -46,7 +48,7 @@ export const useSocketIO = () => {
       autoConnect: false, // achtung! removing this breaks the dynamic middleware
       forceNew: true,
       extraHeaders: {
-        'X-Forward-To': 'localhost:3000'
+        'X-Forward-To': forwardTo || "localhost:9999"
     }
     };
 
@@ -56,7 +58,7 @@ export const useSocketIO = () => {
     }
 
     return { ...options, ...addlSocketOptions };
-  }, [authToken, addlSocketOptions, baseUrl]);
+  }, [authToken, addlSocketOptions, baseUrl, forwardTo]);
 
   useEffect(() => {
     if ($isSocketInitialized.get()) {
